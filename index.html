@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Aditi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Dancing+Script:wght@600&family=Merriweather:ital,wght@1,300&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --midnight: #0a1128;
+            --glass-white: rgba(255, 255, 255, 0.05);
+            --border-grey: rgba(200, 200, 200, 0.2);
+            --text-pure: #ffffff;
+            --text-grey: #b0b0b0;
+            --pink-accent: #ffb7c5;
+            --danger-red: #ff4d4d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-deep);
+            background: radial-gradient(circle at bottom, var(--midnight) 0%, var(--bg-deep) 100%);
+            color: var(--text-pure);
+            font-family: 'Patrick Hand', cursive;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        section {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        section.active { display: flex; opacity: 1; }
+
+        .glass-panel {
+            background: var(--glass-white);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-grey);
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 550px;
+            width: 95%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+        }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: clamp(2.2rem, 8vw, 3.2rem); color: var(--pink-accent); text-shadow: 0 0 15px rgba(255, 183, 197, 0.3); }
+        
+        .btn {
+            background: var(--text-pure); color: var(--bg-deep); border: none;
+            padding: 12px 30px; border-radius: 50px;
+            font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; margin-top: 25px;
+            font-family: 'Patrick Hand', cursive; font-size: 1.2rem;
+        }
+        .btn:hover:not(:disabled) { transform: translateY(-3px); background: var(--pink-accent); box-shadow: 0 10px 20px rgba(255, 183, 197, 0.2); }
+
+        /* Carousel */
+        .carousel { display: flex; gap: 15px; overflow-x: auto; padding: 10px; width: 100%; scrollbar-width: none; }
+        .memory-card { flex: 0 0 240px; height: 320px; background: #111; border-radius: 18px; position: relative; overflow: hidden; border: 1px solid var(--border-grey); }
+        .memory-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
+
+        /* Game Area */
+        #game-area {
+            width: 100%; height: 350px; background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border-grey); border-radius: 20px;
+            position: relative; margin: 20px 0; overflow: hidden; touch-action: none;
+        }
+        #basket {
+            position: absolute; bottom: 10px; left: 50%;
+            width: 75px; height: 14px; background: var(--pink-accent);
+            border-radius: 10px; transform: translateX(-50%);
+            box-shadow: 0 0 15px var(--pink-accent);
+        }
+        .falling-star { position: absolute; color: var(--pink-accent); font-size: 1.8rem; text-shadow: 0 0 10px #fff; pointer-events: none; }
+        
+        .game-stats { display: flex; justify-content: space-between; width: 100%; font-size: 1.2rem; margin-top: 5px; color: var(--text-grey); }
+        .lives { color: var(--danger-red); }
+
+        #game-input {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border-grey);
+            color: var(--pink-accent); padding: 10px; border-radius: 12px; width: 85px; text-align: center;
+            font-family: 'Patrick Hand'; font-size: 1.4rem; outline: none;
+        }
+
+        #music-ui { position: fixed; bottom: 30px; left: 30px; display: none; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-grey); letter-spacing: 1px; }
+
+        .vibe-tile { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; border: 1px solid var(--border-grey); color: var(--text-grey); font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <section id="hero" class="active">
+            <h1 style="font-size: 4rem;">For Aditi</h1>
+            <p style="font-size: 1rem; letter-spacing: 4px; color: var(--text-grey); font-family: 'Merriweather';">A MOMENT IN TIME</p>
+            <button class="btn" onclick="startExperience()">Enter</button>
+        </section>
+
+        <section id="memories">
+            <h1 style="margin-bottom: 20px;">Collected Chapters</h1>
+            <div class="carousel">
+                <div class="memory-card"><img src="aditi1.jpg" alt=""><div style="position:absolute; bottom:15px; left:15px; color: var(--pink-accent);">The start.</div></div>
+                <div class="memory-card"><img src="aditi2.jpg" alt=""><div style="position:absolute; bottom:15px; left:15px; color: var(--pink-accent);">Small smiles.</div></div>
+                <div class="memory-card"><img src="aditi3.jpg" alt=""><div style="position:absolute; bottom:15px; left:15px; color: var(--pink-accent);">Thinking of you.</div></div>
+            </div>
+            <button class="btn" onclick="showSection('notice')">Next →</button>
+            <audio id="bg-music" loop><source src="music.mp3" type="audio/mpeg"></audio>
+            
+        </section>
+
+        <section id="notice">
+            <div class="glass-panel">
+                <h1>Things I've noticed...</h1>
+                <div id="typewriter" style="text-align: left; line-height: 1.8; margin-top: 10px;"></div>
+                <button class="btn" id="notice-next" style="display:none;" onclick="showSection('vibe')">Continue</button>
+            </div>
+        </section>
+
+        <section id="vibe">
+            <div class="glass-panel">
+                <h1>The Vibe</h1>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
+                    <div class="vibe-tile">✨ Infinite kindness</div>
+                    <div class="vibe-tile">🤭 Your distinct laugh</div>
+                    <div class="vibe-tile">🌌 Deep conversations</div>
+                    <div class="vibe-tile">🌙 Silent understanding</div>
+                </div>
+                <button class="btn" onclick="showSection('game-prep')">Move Forward</button>
+            </div>
+        </section>
+
+        <section id="game-prep">
+            <div class="glass-panel">
+                <h1>A small detail...</h1>
+                <p style="margin: 20px 0; color: var(--text-grey);">Before we continue, please enter your lucky number (1 - 30):</p>
+                <input type="number" id="game-input" min="1" max="30" value="10">
+                <br>
+                <button class="btn" onclick="showRules()">Confirm</button>
+            </div>
+        </section>
+
+        <section id="game-rules">
+            <div class="glass-panel">
+                <h1>The Challenge</h1>
+                <p style="margin: 20px 0; line-height: 1.8; color: var(--text-grey);">
+                    Catch the <span style="color: var(--pink-accent);">Pink Stars</span> to reach your lucky number.<br>
+                    <span style="color: var(--danger-red);">Be careful: You only have 3 lives.</span>
+                </p>
+                <button class="btn" onclick="startGame()">I'm Ready</button>
+            </div>
+        </section>
+
+        <section id="game-play">
+            <div class="glass-panel" style="max-width: 600px;">
+                <div id="game-area" onmousemove="moveBasket(event)" ontouchmove="moveBasketTouch(event)">
+                    <div id="basket"></div>
+                </div>
+                <div class="game-stats">
+                    <div id="score-display">Stars: 0 / 10</div>
+                    <div class="lives" id="lives-display">Lives: ❤️❤️❤️</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="game-over">
+            <div class="glass-panel">
+                <h1 style="color: var(--danger-red);">Oh no!</h1>
+                <p style="margin-top: 10px;">The stars were a bit too fast this time.</p>
+                <button class="btn" onclick="showSection('game-rules')">Try Again</button>
+            </div>
+        </section>
+
+        <section id="threshold">
+            <div class="glass-panel">
+                <h1 style="font-family: 'Merriweather'; font-style: italic; font-size: 2rem;">A Sincere Note</h1>
+                <p style="color: var(--text-grey); line-height: 1.8; margin: 20px 0;">
+                    I believe that some thoughts are best shared with intention. You have always been someone I deeply respect, and I wanted this moment to reflect that.
+                </p>
+                <button class="btn" onclick="showSection('the-ask')">Continue</button>
+            </div>
+        </section>
+
+        <section id="the-ask">
+            <div class="glass-panel">
+                <h1 style="font-size: 2.8rem;">Aditi...</h1>
+                <p style="margin: 25px 0; line-height: 1.7; font-size: 1.4rem;">
+                    I find myself truly enjoying every moment we share together. It would be an absolute honor for me if you would allow me to spend this Valentine's Day with you.
+                </p>
+                <p style="font-size: 1.1rem; color: var(--text-grey);">Would you do me the pleasure of being my Valentine?</p>
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <button class="btn" onclick="handleYes()">I would love to</button>
+                    <button class="btn" style="background:transparent; color:var(--text-grey); border:1px solid var(--border-grey);" id="no-btn" onclick="handleNo()">I'm sorry...</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="love-letter">
+            <div class="glass-panel" style="text-align: left; font-family: 'Merriweather', serif; font-style: italic; line-height: 1.9; max-width: 600px; height: 80vh; overflow-y: auto; scrollbar-width: none;">
+                <p id="final-header" style="font-family: 'Patrick Hand'; font-style: normal; font-weight: bold; margin-bottom: 20px; font-size: 1.8rem; color: var(--pink-accent);"></p>
+                <p>Dear Aditi,</p><br>
+                <p>I wanted to create something as special as you are. Even though we spend our days navigating school, studies, and all the little stresses in between, your presence has a way of making the most ordinary days feel meaningful. I've spent quite a bit of time thinking about how to say this, and I realized that sincerity is always better than perfection.</p>
+                <p>Thank you for being someone I can talk to for hours without feeling the time pass. I appreciate the way you genuinely listen, the perspective you bring, and the simple kindness you show to everyone around you. You carry yourself with a grace that is rare, and I feel lucky to know you.</p>
+                <p>No matter what the future holds for us, I am truly grateful that our paths crossed. I genuinely look forward to spending more time together and seeing where this journey takes us.</p>
+                <br>
+                <p>— Sincerely, [Your Name]</p>
+            </div>
+        </section>
+    </div>
+
+    <audio id="bg-music" loop><source src="your-audio.mp3" type="audio/mpeg"></audio>
+    <div id="music-ui"><span>♫ Playing for Aditi</span></div>
+
+    <script>
+        const notices = [
+            "The grace with which you carry yourself.",
+            "The way you find meaning in the smallest things.",
+            "How effortless and refreshing our conversations feel.",
+            "Your quiet strength and the kindness in your words.",
+            "That you are, quite simply, an incredible person."
+        ];
+
+        let targetScore = 10;
+        let currentScore = 0;
+        let lives = 3;
+        let gameActive = false;
+
+        function startExperience() {
+            document.getElementById('bg-music').play().catch(() => {});
+            document.getElementById('music-ui').style.display = 'flex';
+            showSection('memories');
+        }
+
+        function showSection(id) {
+            const active = document.querySelector('section.active');
+            if(active) {
+                active.style.opacity = '0';
+                setTimeout(() => {
+                    active.classList.remove('active');
+                    active.style.display = 'none';
+                    const next = document.getElementById(id);
+                    next.style.display = 'flex';
+                    setTimeout(() => next.classList.add('active'), 50);
+                }, 1000);
+            } else {
+                const next = document.getElementById(id);
+                next.style.display = 'flex';
+                next.classList.add('active');
+            }
+            if (id === 'notice') setTimeout(() => typeWriter(0, 0), 1100);
+        }
+
+        function typeWriter(tIdx, cIdx) {
+            const container = document.getElementById('typewriter');
+            if (tIdx < notices.length) {
+                if (cIdx === 0) {
+                    const p = document.createElement('p');
+                    p.style.marginBottom = "10px"; p.id = `line-${tIdx}`;
+                    container.appendChild(p);
+                }
+                document.getElementById(`line-${tIdx}`).innerHTML = "• " + notices[tIdx].substring(0, cIdx + 1);
+                if (cIdx < notices[tIdx].length) setTimeout(() => typeWriter(tIdx, cIdx + 1), 35);
+                else setTimeout(() => typeWriter(tIdx + 1, 0), 400);
+            } else {
+                document.getElementById('notice-next').style.display = 'inline-block';
+            }
+        }
+
+        function showRules() {
+            targetScore = parseInt(document.getElementById('game-input').value) || 10;
+            showSection('game-rules');
+        }
+
+        function startGame() {
+            currentScore = 0; lives = 3; gameActive = true;
+            document.getElementById('game-area').innerHTML = '<div id="basket"></div>';
+            showSection('game-play');
+            updateStats();
+            spawnStar();
+        }
+
+        function spawnStar() {
+            if(!gameActive) return;
+            const area = document.getElementById('game-area');
+            const star = document.createElement('div');
+            star.className = 'falling-star';
+            star.innerHTML = '✦';
+            star.style.left = Math.random() * (area.clientWidth - 40) + 'px';
+            star.style.top = '-30px';
+            area.appendChild(star);
+            
+            let pos = -30;
+            const fallSpeed = 3.8 + Math.random() * 2.8;
+            
+            const fallInterval = setInterval(() => {
+                if(!gameActive) { clearInterval(fallInterval); star.remove(); return; }
+                pos += fallSpeed;
+                star.style.top = pos + 'px';
+                
+                const b = document.getElementById('basket').getBoundingClientRect();
+                const s = star.getBoundingClientRect();
+
+                if (s.bottom >= b.top && s.top <= b.bottom && s.left >= b.left && s.right <= b.right) {
+                    currentScore++;
+                    updateStats();
+                    clearInterval(fallInterval);
+                    star.remove();
+                    if(currentScore >= targetScore) {
+                        const count = 200, defaults = { origin: { y: 0.7 }, colors: ['#ffb7c5', '#ffffff'] };
+                        confetti({ ...defaults, particleCount: 40, spread: 26, startVelocity: 55 });
+                        gameActive = false;
+                        setTimeout(() => showSection('threshold'), 1200);
+                    }
+                }
+
+                if(pos > 350) { 
+                    clearInterval(fallInterval); star.remove();
+                    lives--; updateStats();
+                    if(lives <= 0) { gameActive = false; showSection('game-over'); }
+                }
+            }, 16);
+            setTimeout(spawnStar, 800);
+        }
+
+        function updateStats() {
+            document.getElementById('score-display').innerText = `Stars: ${currentScore} / ${targetScore}`;
+            document.getElementById('lives-display').innerText = `Lives: ${"❤️".repeat(lives)}`;
+        }
+
+        function moveBasket(e) {
+            const area = document.getElementById('game-area').getBoundingClientRect();
+            const x = e.clientX - area.left;
+            document.getElementById('basket').style.left = Math.max(37, Math.min(area.width - 37, x)) + 'px';
+        }
+
+        function moveBasketTouch(e) {
+            const area = document.getElementById('game-area').getBoundingClientRect();
+            const x = e.touches[0].clientX - area.left;
+            document.getElementById('basket').style.left = Math.max(37, Math.min(area.width - 37, x)) + 'px';
+        }
+
+        function handleYes() {
+            const end = Date.now() + (3 * 1000);
+            const colors = ['#ffb7c5', '#ffffff'];
+            (function frame() {
+                confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+            document.getElementById('final-header').innerHTML = "I am truly delighted. 💙";
+            showSection('love-letter');
+        }
+
+        function handleNo() {
+            const btn = document.getElementById('no-btn');
+            btn.style.animation = "shake 0.1s infinite";
+            btn.innerText = "SELF-DESTRUCT IN 3...";
+            btn.style.color = "red";
+            setTimeout(() => btn.innerText = "HEART OVERLOAD", 1000);
+            setTimeout(() => {
+                alert("💥 BOOM! The developer has died of a broken heart. System crashing...");
+                document.getElementById('final-header').innerHTML = "I respect your decision completely. :)";
+                showSection('love-letter');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
